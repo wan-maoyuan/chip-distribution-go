@@ -53,6 +53,7 @@ func (service *ChipService) UploadExcel(c *gin.Context) {
 	}
 	defer os.Remove(filePath)
 
+	// 读取excel中的数据
 	stockInfoList, companyMap, err := readExcelData(filePath)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, entity.ErrResponse{
@@ -61,7 +62,9 @@ func (service *ChipService) UploadExcel(c *gin.Context) {
 		return
 	}
 
+	// 删除数据库中旧的数据
 	service.engine.DeleteStockInfoByCompanyName(companyMap)
+	// 将新的数据插入到数据库中
 	service.engine.InsertCompanies(companyMap)
 
 	if err := service.engine.InsertStockInfoList(stockInfoList); err != nil {
