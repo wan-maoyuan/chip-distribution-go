@@ -38,7 +38,13 @@ func NewDataBaseEngine() (*DataBaseEngine, error) {
 	}, nil
 }
 
-func (engine *DataBaseEngine) InsertCompanys(companyMap map[string]struct{}) {
+func (engine *DataBaseEngine) QueryAllCompanies() ([]entity.Company, error) {
+	var companies []entity.Company
+	result := engine.database.Find(&companies)
+	return companies, result.Error
+}
+
+func (engine *DataBaseEngine) InsertCompanies(companyMap map[string]struct{}) {
 	if companyMap == nil {
 		return
 	}
