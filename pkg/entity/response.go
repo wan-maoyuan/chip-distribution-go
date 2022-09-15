@@ -1,9 +1,9 @@
 package entity
 
 type ErrResponse struct {
-	Message string
+	Message string `json:"message"`
 }
 
 type GetAllCompaniesResponse struct {
-	Companies []Company
+	Companies []Company `json:"companies"`
 }
