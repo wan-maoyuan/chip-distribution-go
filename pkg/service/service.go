@@ -62,7 +62,7 @@ func (service *ChipService) UploadExcel(c *gin.Context) {
 	}
 
 	service.engine.DeleteByCompanyName(companyMap)
-	service.engine.InsertCompanys(companyMap)
+	service.engine.InsertCompanies(companyMap)
 
 	if err := service.engine.InsertStockInfoList(stockInfoList); err != nil {
 		c.JSON(http.StatusInternalServerError, entity.ErrResponse{
@@ -72,6 +72,20 @@ func (service *ChipService) UploadExcel(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, "OK")
+}
+
+func (service *ChipService) GetAllCompanies(c *gin.Context) {
+	companies, err := service.engine.QueryAllCompanies()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, entity.ErrResponse{
+			Message: err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, entity.GetAllCompaniesResponse{
+		Companies: companies,
+	})
 }
 
 func (service *ChipService) Close() {
