@@ -19,6 +19,6 @@ type StockInfo struct {
 }
 
 type Company struct {
-	Id   uint64 `gorm:"primaryKey;autoIncrement"`
-	Name string // 公司名称
+	Id   uint64 `gorm:"primaryKey;autoIncrement" json:"id"`
+	Name string `json:"name"` // 公司名称
 }
