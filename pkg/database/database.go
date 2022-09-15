@@ -57,6 +57,12 @@ func (engine *DataBaseEngine) InsertCompanies(companyMap map[string]struct{}) {
 	}
 }
 
+func (engine *DataBaseEngine) QueryStockInfoByCompanyName(companyName string) ([]entity.StockInfo, error) {
+	var infos []entity.StockInfo
+	result := engine.database.Where("name = ?", companyName).Find(&infos)
+	return infos, result.Error
+}
+
 func (engine *DataBaseEngine) DeleteStockInfoByCompanyName(companyMap map[string]struct{}) {
 	if companyMap == nil {
 		return
