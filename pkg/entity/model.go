@@ -6,7 +6,7 @@ type StockInfo struct {
 	Id           uint64    `gorm:"primaryKey;autoIncrement"`
 	Date         time.Time // 日期
 	Code         string    // 股票代码
-	Name         string    // 股票票名称
+	Name         string    // 股票名称
 	Open         float64   // 当天开盘价
 	Close        float64   // 当天收盘价
 	Highest      float64   // 当天最高价
@@ -16,4 +16,9 @@ type StockInfo struct {
 	Vloume       float64   // 成交量
 	Money        float64   // 成交金额
 	TurnoverRate float64   // 换手率
+}
+
+type Company struct {
+	Id   uint64 `gorm:"primaryKey;autoIncrement"`
+	Name string // 公司名称
 }
