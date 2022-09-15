@@ -57,7 +57,7 @@ func (engine *DataBaseEngine) InsertCompanies(companyMap map[string]struct{}) {
 	}
 }
 
-func (engine *DataBaseEngine) DeleteByCompanyName(companyMap map[string]struct{}) {
+func (engine *DataBaseEngine) DeleteStockInfoByCompanyName(companyMap map[string]struct{}) {
 	if companyMap == nil {
 		return
 	}

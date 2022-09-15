@@ -61,7 +61,7 @@ func (service *ChipService) UploadExcel(c *gin.Context) {
 		return
 	}
 
-	service.engine.DeleteByCompanyName(companyMap)
+	service.engine.DeleteStockInfoByCompanyName(companyMap)
 	service.engine.InsertCompanies(companyMap)
 
 	if err := service.engine.InsertStockInfoList(stockInfoList); err != nil {
