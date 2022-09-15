@@ -59,11 +59,13 @@ func (server *ChipServer) Run() {
 }
 
 func (server *ChipServer) registerApi() {
+	server.g.GET("/company", server.service.GetAllCompany)
 	server.g.POST("/upload_excel", server.service.UploadExcel)
 	server.g.GET("/shutdown", func(c *gin.Context) {
 		go server.shutdown()
 		c.String(http.StatusOK, "OK")
 	})
+
 	logrus.Info("register chip api route success")
 }
 
