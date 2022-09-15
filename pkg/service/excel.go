@@ -105,18 +105,19 @@ func readExcelData(filePath string) ([]entity.StockInfo, map[string]struct{}, er
 		}
 
 		excelList = append(excelList, entity.StockInfo{
-			Date:         date,
-			Code:         row[1],
-			Name:         row[2],
-			Open:         open,
-			Close:        close,
-			Highest:      high,
-			Lowest:       low,
-			Average:      avg,
-			QuoteChange:  quote,
-			Vloume:       vloume,
-			Money:        money,
-			TurnoverRate: turnoverRate,
+			Date:          date,
+			Code:          row[1],
+			Name:          row[2],
+			Open:          open,
+			Close:         close,
+			Highest:       high,
+			Lowest:        low,
+			Average:       avg,
+			QuoteChange:   quote,
+			Vloume:        vloume,
+			Money:         money,
+			TurnoverRate:  turnoverRate,
+			Concentration: 0.0,
 		})
 
 		companyMap[row[2]] = struct{}{}
