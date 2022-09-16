@@ -131,7 +131,7 @@ func costDistribution(cost *CostDistribution) {
 
 		if info, ok := cost.ConcentrationMap[date]; ok {
 			con := (right - left) / (right + left)
-			info.Concentration, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", con), 64)
+			info.Concentration, _ = strconv.ParseFloat(fmt.Sprintf("%.4f", con), 64)
 		}
 	}
 }
