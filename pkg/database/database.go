@@ -82,6 +82,14 @@ func (engine *DataBaseEngine) InsertStockInfoList(infoList []entity.StockInfo) e
 	return nil
 }
 
+func (engine *DataBaseEngine) UpdateStockInfoByNameDate(info entity.StockInfo) error {
+	result := engine.database.
+		Model(&info).
+		Update("concentration", info.Concentration)
+
+	return result.Error
+}
+
 func (engine *DataBaseEngine) Close() {
 	db, _ := engine.database.DB()
 	db.Close()
