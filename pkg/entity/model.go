@@ -13,7 +13,7 @@ type StockInfo struct {
 	Lowest        float64   // 当天最低价
 	Average       float64   // 当天平均价格
 	QuoteChange   float64   // 涨跌幅
-	Vloume        float64   // 成交量
+	Volume        float64   // 成交量
 	Money         float64   // 成交金额
 	TurnoverRate  float64   // 换手率
 	Concentration float64   // 集中度

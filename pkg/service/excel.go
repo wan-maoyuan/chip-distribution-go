@@ -90,7 +90,7 @@ func readExcelData(filePath string) ([]entity.StockInfo, map[string]struct{}, er
 			continue
 		}
 
-		vloume, err := strconv.ParseFloat(row[9], 64)
+		volume, err := strconv.ParseFloat(row[9], 64)
 		if err != nil {
 			continue
 		}
@@ -111,7 +111,7 @@ func readExcelData(filePath string) ([]entity.StockInfo, map[string]struct{}, er
 		low, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", low), 64)
 		avg, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", avg), 64)
 		quote, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", quote), 64)
-		vloume, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", vloume), 64)
+		volume, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", volume), 64)
 		money, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", money), 64)
 		turnoverRate, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", turnoverRate), 64)
 
@@ -125,7 +125,7 @@ func readExcelData(filePath string) ([]entity.StockInfo, map[string]struct{}, er
 			Lowest:        low,
 			Average:       avg,
 			QuoteChange:   quote,
-			Vloume:        vloume,
+			Volume:        volume,
 			Money:         money,
 			TurnoverRate:  turnoverRate,
 			Concentration: 0.0,
