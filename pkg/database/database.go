@@ -38,12 +38,12 @@ func NewDataBaseEngine() (*DataBaseEngine, error) {
 	}, nil
 }
 
-func (engine *DataBaseEngine) QueryCompanyByName(name string) (entity.Company, error) {
-	var company entity.Company
+func (engine *DataBaseEngine) QueryCompanyByName(name string) ([]entity.Company, error) {
+	var companies = []entity.Company{}
 
-	result := engine.database.Where("name = ?", name).First(&company)
+	result := engine.database.Where("name = ?", name).Find(&companies)
 
-	return company, result.Error
+	return companies, result.Error
 }
 
 func (engine *DataBaseEngine) QueryAllCompanies() ([]entity.Company, error) {
@@ -58,9 +58,12 @@ func (engine *DataBaseEngine) InsertCompanies(companyMap map[string]struct{}) {
 	}
 
 	for key := range companyMap {
-		result := engine.database.Where("name = ?", key).First(&companyMap)
-		if result.RowsAffected == 0 {
-			engine.database.Create(&entity.Company{Name: key})
+		companies, err := engine.QueryCompanyByName(key)
+		if err == nil && len(companies) == 0 {
+			result := engine.database.Where("name = ?", key).First(&companyMap)
+			if result.RowsAffected == 0 {
+				engine.database.Create(&entity.Company{Name: key})
+			}
 		}
 	}
 }
