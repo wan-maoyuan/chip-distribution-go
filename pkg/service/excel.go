@@ -3,6 +3,7 @@ package service
 import (
 	"chip-distribution-go/pkg/entity"
 	"errors"
+	"fmt"
 	"os"
 	"strconv"
 	"time"
@@ -103,6 +104,16 @@ func readExcelData(filePath string) ([]entity.StockInfo, map[string]struct{}, er
 		if err != nil {
 			continue
 		}
+
+		open, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", open), 64)
+		close, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", close), 64)
+		high, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", high), 64)
+		low, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", low), 64)
+		avg, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", avg), 64)
+		quote, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", quote), 64)
+		vloume, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", vloume), 64)
+		money, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", money), 64)
+		turnoverRate, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", turnoverRate), 64)
 
 		excelList = append(excelList, entity.StockInfo{
 			Date:          date,
