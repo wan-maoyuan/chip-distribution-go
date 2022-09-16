@@ -73,6 +73,8 @@ func (service *ChipService) UploadExcel(c *gin.Context) {
 		})
 		return
 	}
+	// 计算excel中所有公司的筹码集中度, 默认使用平均分布算法
+	service.calculateConcentration(companyMap, 0)
 
 	c.JSON(http.StatusOK, "OK")
 }
