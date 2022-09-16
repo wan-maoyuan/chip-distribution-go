@@ -59,7 +59,7 @@ func (service *ChipService) averageDistribute(name string) {
 		ConcentrationMap: make(map[time.Time]*entity.StockInfo),
 	}
 
-	for index, _ := range stockInfoList {
+	for index := range stockInfoList {
 		cost.DateList = append(cost.DateList, stockInfoList[index].Date)
 		cost.ConcentrationMap[stockInfoList[index].Date] = &stockInfoList[index]
 		priceRange := []float64{}
