@@ -38,6 +38,14 @@ func NewDataBaseEngine() (*DataBaseEngine, error) {
 	}, nil
 }
 
+func (engine *DataBaseEngine) QueryCompanyByName(name string) (entity.Company, error) {
+	var company entity.Company
+
+	result := engine.database.Where("name = ?", name).First(&company)
+
+	return company, result.Error
+}
+
 func (engine *DataBaseEngine) QueryAllCompanies() ([]entity.Company, error) {
 	var companies []entity.Company
 	result := engine.database.Find(&companies)
