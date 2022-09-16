@@ -59,7 +59,7 @@ func (engine *DataBaseEngine) InsertCompanies(companyMap map[string]struct{}) {
 
 func (engine *DataBaseEngine) QueryStockInfoByCompanyName(companyName string) ([]entity.StockInfo, error) {
 	var infos []entity.StockInfo
-	result := engine.database.Where("name = ?", companyName).Find(&infos)
+	result := engine.database.Where("name = ?", companyName).Order("date").Find(&infos)
 	return infos, result.Error
 }
 
