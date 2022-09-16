@@ -22,8 +22,7 @@ func (service *ChipService) calculateConcentration(companyMap map[string]struct{
 	}
 
 	for key := range companyMap {
-		service.checkDistributedType(key, ty)
-		break
+		go service.checkDistributedType(key, ty)
 	}
 }
 
