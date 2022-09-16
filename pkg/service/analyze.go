@@ -4,6 +4,7 @@ import (
 	"chip-distribution-go/pkg/entity"
 	"fmt"
 	"sort"
+	"strconv"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -129,7 +130,8 @@ func costDistribution(cost *CostDistribution) {
 		}
 
 		if info, ok := cost.ConcentrationMap[date]; ok {
-			info.Concentration = (right - left) / (right + left)
+			con := (right - left) / (right + left)
+			info.Concentration, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", con), 64)
 		}
 	}
 }
