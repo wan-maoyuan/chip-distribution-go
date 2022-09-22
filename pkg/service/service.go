@@ -26,6 +26,10 @@ func NewChipService() (*ChipService, error) {
 	return service, nil
 }
 
+func (service *ChipService) Index(c *gin.Context) {
+	c.HTML(http.StatusOK, "index.html", nil)
+}
+
 func (service *ChipService) UploadExcel(c *gin.Context) {
 	form, err := c.MultipartForm()
 	if err != nil {
