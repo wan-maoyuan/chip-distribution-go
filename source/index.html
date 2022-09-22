@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+	<title>筹码分布</title>
+</head>
+<body>
+	<div id="app">
+		<!-- 配置项 -->
+		<div style="margin: 40px 10% 40px 10%;">
+			<el-tag>公司</el-tag>
+			<el-select v-model="selectedCompany" filterable placeholder="请选择">
+				<el-option
+					v-for="company in companies"
+					:key="company.value"
+					:label="company.label"
+					:value="company.value">
+				</el-option>
+			</el-select>
+			<el-tag>对比指标</el-tag>
+			<el-select v-model="selectedQuotas" placeholder="请选择">
+				<el-option
+					v-for="quota in quotas"
+					:key="quota.value"
+					:label="quota.label"
+					:value="quota.value">
+				</el-option>
+			</el-select>
+			<el-button type="primary" @click="getStockChipData">获取数据</el-button>
+			<el-button type="primary" @click="shutdownServer">关闭服务</el-button>
+		</div>
+
+		<!-- 图表 -->
+		<div id="main" style="margin: 40px 10% 40px 10%; width: 80%; height: 800px;"></div>
+	</div>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.3.3/dist/echarts.min.js"></script>
+<script>
+new Vue({
+	el: '#app',
+	data: function() {
+		return {
+			companies: [],
+			selectedCompany: '',
+			quotas: [
+				{
+					value: 'close',
+					label: '收盘价'
+				},{
+					value: 'quote_change',
+					label: '涨跌幅'
+				}, {
+					value: 'turnover_rate',
+					label: '换手率'
+				}
+			],
+			selectedQuotas: '',
+			mainChart: null
+		}
+	},
+	mounted() {
+		this.getAllConpanies();
+		// this.getMainChartData();
+	},
+	methods: {
+		getAllConpanies() {
+			var that = this;
+			axios.get('/company')
+				.then(function (response) {
+					if (response.status == 200) {
+						that.companies = [];
+						response.data.companies.forEach(item => {
+							that.companies.push({
+								value: item.name,
+								label: item.name
+							})
+						});
+					}
+				})
+				.catch(function (error) {
+					console.log(error);
+				});
+		},
+		
+		getStockChipData() {
+			console.log("获取筹码分布数据");
+			if (this.selectedCompany=='' || this.selectedQuotas == '') {
+				alert("请选择好配置！！！");
+				return
+			}
+			
+		},
+
+		getMainChartData() {
+			this.mainChart = echarts.init(document.getElementById('main'));
+			// 指定图表的配置项和数据
+			var option = {
+				title: {
+				text: '筹码分布'
+				},
+				tooltip: {},
+				legend: {
+				data: ['销量']
+				},
+				xAxis: {
+				data: ['衬衫', '羊毛衫', '雪纺衫', '裤子', '高跟鞋', '袜子']
+				},
+				yAxis: {},
+				series: [
+					{
+						name: '销量',
+						type: 'bar',
+						data: [5, 20, 36, 10, 10, 20]
+					}
+				]
+			};
+
+			// 使用刚指定的配置项和数据显示图表。
+			this.mainChart.setOption(option);
+		},
+		
+		shutdownServer() {
+			axios.get('/shutdown')
+				.then(function (response) {
+					if (response.status == 200) {
+						alert("服务关闭成功");
+					} else {
+						alert("服务关闭失败");
+					}
+				})
+				.catch(function (error) {
+					alert(error);
+				});
+		}
+	}
+})
+</script>
+
+</html>
