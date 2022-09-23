@@ -7,3 +7,7 @@ type ErrResponse struct {
 type GetAllCompaniesResponse struct {
 	Companies []Company `json:"companies"`
 }
+
+type GetAllStockInfosResponse struct {
+	StockInfos []StockInfo `json:"stock_infos"`
+}
