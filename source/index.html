@@ -11,26 +11,41 @@
 	<div id="app">
 		<!-- 配置项 -->
 		<div style="margin: 40px 10% 40px 10%;">
-			<el-tag>公司</el-tag>
-			<el-select v-model="selectedCompany" filterable placeholder="请选择">
-				<el-option
-					v-for="company in companies"
-					:key="company.value"
-					:label="company.label"
-					:value="company.value">
-				</el-option>
-			</el-select>
-			<el-tag>对比指标</el-tag>
-			<el-select v-model="selectedQuotas" placeholder="请选择">
-				<el-option
-					v-for="quota in quotas"
-					:key="quota.value"
-					:label="quota.label"
-					:value="quota.value">
-				</el-option>
-			</el-select>
-			<el-button type="primary" @click="getStockChipData">获取数据</el-button>
-			<el-button type="primary" @click="shutdownServer">关闭服务</el-button>
+			<el-row>
+				<el-col :span="8">
+					<el-upload
+						class="upload-demo"
+						drag
+						action="/upload_excel"
+						:on-success="uploadExcelSuccess"
+						multiple>
+						<i class="el-icon-upload"></i>
+						<div class="el-upload__text">将xlsx文件拖到此处，或<em>点击上传</em></div>
+					</el-upload>
+				</el-col>
+				<el-col :span="16">
+					<el-tag>公司</el-tag>
+					<el-select v-model="selectedCompany" filterable placeholder="请选择">
+						<el-option
+							v-for="company in companies"
+							:key="company.value"
+							:label="company.label"
+							:value="company.value">
+						</el-option>
+					</el-select>
+					<el-tag>对比指标</el-tag>
+					<el-select v-model="selectedQuotas" placeholder="请选择">
+						<el-option
+							v-for="quota in quotas"
+							:key="quota.value"
+							:label="quota.label"
+							:value="quota.value">
+						</el-option>
+					</el-select>
+					<el-button type="primary" @click="getStockChipData">获取数据</el-button>
+					<el-button type="primary" @click="shutdownServer">关闭服务</el-button>
+				</el-col>
+			</el-row>
 		</div>
 
 		<!-- 图表 -->
@@ -62,12 +77,13 @@ new Vue({
 				}
 			],
 			selectedQuotas: '',
-			mainChart: null
+			mainChart: null,
+			dateList: [],
+			concentrationList: []
 		}
 	},
 	mounted() {
 		this.getAllConpanies();
-		// this.getMainChartData();
 	},
 	methods: {
 		getAllConpanies() {
@@ -90,12 +106,29 @@ new Vue({
 		},
 		
 		getStockChipData() {
-			console.log("获取筹码分布数据");
+			var that = this;
 			if (this.selectedCompany=='' || this.selectedQuotas == '') {
 				alert("请选择好配置！！！");
 				return
 			}
 			
+			axios.get('/stock_info?company=' + this.selectedCompany)
+				.then(function (response) {
+					if (response.status == 200) {
+						that.dateList = [];
+						that.concentrationList = [];
+
+						response.data.stock_infos.forEach(item => {
+							that.dateList.push(item.date.substring(0, 10));
+							that.concentrationList.push(item.concentration);
+						});
+
+						that.getMainChartData();
+					}
+				})
+				.catch(function (error) {
+					console.log(error);
+				});
 		},
 
 		getMainChartData() {
@@ -103,21 +136,37 @@ new Vue({
 			// 指定图表的配置项和数据
 			var option = {
 				title: {
-				text: '筹码分布'
+					text: '筹码分布'
 				},
-				tooltip: {},
-				legend: {
-				data: ['销量']
+				tooltip: {
+					trigger: 'axis'
 				},
+				legend: {},
 				xAxis: {
-				data: ['衬衫', '羊毛衫', '雪纺衫', '裤子', '高跟鞋', '袜子']
+					type: 'category',
+					boundaryGap: false,
+					data: this.dateList
 				},
-				yAxis: {},
+				yAxis: {
+					type: 'value',
+				},
+				dataZoom: [
+					{
+						type: 'inside',
+						start: 80,
+						end: 100
+					},
+					{
+						start: 80,
+						end: 100
+					}
+				],
 				series: [
 					{
-						name: '销量',
-						type: 'bar',
-						data: [5, 20, 36, 10, 10, 20]
+						name: '集中度',
+						type: 'line',
+						showSymbol: false,
+						data: this.concentrationList
 					}
 				]
 			};
@@ -126,6 +175,10 @@ new Vue({
 			this.mainChart.setOption(option);
 		},
 		
+		uploadExcelSuccess() {
+			this.getAllConpanies();
+		},
+
 		shutdownServer() {
 			axios.get('/shutdown')
 				.then(function (response) {
