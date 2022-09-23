@@ -30,6 +30,22 @@ func (service *ChipService) Index(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.html", nil)
 }
 
+func (service *ChipService) GetAllStockInfos(c *gin.Context) {
+	company := c.Query("company")
+
+	infos, err := service.engine.QueryStockInfoByCompanyName(company)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, entity.ErrResponse{
+			Message: err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, entity.GetAllStockInfosResponse{
+		StockInfos: infos,
+	})
+}
+
 func (service *ChipService) UploadExcel(c *gin.Context) {
 	form, err := c.MultipartForm()
 	if err != nil {

@@ -62,6 +62,7 @@ func (server *ChipServer) registerApi() {
 	server.g.StaticFile("/", "./source/index.html")
 
 	server.g.GET("/company", server.service.GetAllCompanies)
+	server.g.GET("/stock_info", server.service.GetAllStockInfos)
 	server.g.POST("/upload_excel", server.service.UploadExcel)
 	server.g.GET("/shutdown", func(c *gin.Context) {
 		go server.shutdown()
