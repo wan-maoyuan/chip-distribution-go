@@ -1,0 +1,14 @@
+version: "3.8"
+networks:
+  chip-distribution-network:
+    driver: bridge
+services:
+  chip-distribution-service:
+    image: chip-distribution:v1.0.0
+    container_name: chip-distribution-compose
+    networks:
+      - chip-distribution-network
+    ports:
+      - "8080:8080"  
+    volumes:
+      - /etc/localtime:/etc/localtime
