@@ -1,4 +1,4 @@
-FROM ubuntu:18.04 
+FROM ubuntu:20.04 
 
 COPY dist/chip-distribution /opt/chip-distribution/
 COPY source/ /opt/chip-distribution/source
