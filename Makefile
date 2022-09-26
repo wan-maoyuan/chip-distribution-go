@@ -16,7 +16,7 @@ GOFILES := $(shell find . ! -path "./vendor/*" -name "*.go")
 # 构建附加选项
 BUILD_OPTS := -ldflags "-s -w -X 'main.Version=${VERSION}' -X 'main.CommitHash=${COMMIT_HASH}' -X 'main.BuildTime=${BUILD_TIME}'"
 # 编译环境
-BUILD_ENV := GOOS=linux GOARCH=amd64
+BUILD_ENV := CGO_ENABLED=1 GOOS=linux GOARCH=amd64
 
 
 .PHONY: build
