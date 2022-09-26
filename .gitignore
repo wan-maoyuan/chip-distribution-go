@@ -1,6 +1,7 @@
 # 文件夹
 data/
 DB/
+dist/
 
 # 文件
 go.sum
