@@ -17,13 +17,28 @@ const (
 
 type DistributedType int
 
+// 异步处理excel中解析的数据
+func (service *ChipService) handleExcelData(stockInfoList []entity.StockInfo, companyMap map[string]struct{}) {
+	// 删除数据库中旧的数据
+	service.engine.DeleteStockInfoByCompanyName(companyMap)
+	// 将新的数据插入到数据库中
+	service.engine.InsertCompanies(companyMap)
+
+	if err := service.engine.InsertStockInfoList(stockInfoList); err != nil {
+		logrus.Errorf("function handleExcelData InsertStockInfoList error: %v", err)
+	}
+
+	// 计算excel中所有公司的筹码集中度, 默认使用平均分布算法
+	service.calculateConcentration(companyMap, 0)
+}
+
 func (service *ChipService) calculateConcentration(companyMap map[string]struct{}, ty DistributedType) {
 	if companyMap == nil {
 		return
 	}
 
 	for key := range companyMap {
-		go service.checkDistributedType(key, ty)
+		service.checkDistributedType(key, ty)
 	}
 }
 

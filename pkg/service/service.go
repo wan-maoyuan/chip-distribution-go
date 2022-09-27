@@ -82,19 +82,7 @@ func (service *ChipService) UploadExcel(c *gin.Context) {
 		return
 	}
 
-	// 删除数据库中旧的数据
-	service.engine.DeleteStockInfoByCompanyName(companyMap)
-	// 将新的数据插入到数据库中
-	service.engine.InsertCompanies(companyMap)
-
-	if err := service.engine.InsertStockInfoList(stockInfoList); err != nil {
-		c.JSON(http.StatusInternalServerError, entity.ErrResponse{
-			Message: err.Error(),
-		})
-		return
-	}
-	// 计算excel中所有公司的筹码集中度, 默认使用平均分布算法
-	service.calculateConcentration(companyMap, 0)
+	go service.handleExcelData(stockInfoList, companyMap)
 
 	c.JSON(http.StatusOK, "OK")
 }
