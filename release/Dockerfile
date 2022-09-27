@@ -7,6 +7,6 @@ ENV GIN_MODE=release
 
 EXPOSE 8080
 
-WORKDIR /go/src/app/
+WORKDIR /opt/chip-distribution/
 
-CMD ["/opt/chip-distribution/chip-distribution"]
+CMD ["./chip-distribution"]
