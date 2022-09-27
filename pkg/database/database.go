@@ -3,18 +3,23 @@ package database
 import (
 	"chip-distribution-go/pkg/entity"
 	"os"
+	"sync"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
 const (
-	DataBaseDir  = "./DB"
-	DataBasePath = "./DB/stock.db"
+	DataBaseDir         = "./DB"
+	StockDataBasePath   = "./DB/stock.db"
+	CompanyDataBasePath = "./DB/company.db"
 )
 
 type DataBaseEngine struct {
-	database *gorm.DB
+	stockDB   *gorm.DB
+	stockRW   sync.RWMutex
+	companyDB *gorm.DB
+	companyRW sync.RWMutex
 }
 
 func init() {
@@ -25,81 +30,28 @@ func init() {
 }
 
 func NewDataBaseEngine() (*DataBaseEngine, error) {
-	db, err := gorm.Open(sqlite.Open(DataBasePath), &gorm.Config{})
+	stock, err := gorm.Open(sqlite.Open(StockDataBasePath), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
+	stock.AutoMigrate(&entity.StockInfo{})
 
-	db.AutoMigrate(&entity.StockInfo{})
-	db.AutoMigrate(&entity.Company{})
+	company, err := gorm.Open(sqlite.Open(CompanyDataBasePath), &gorm.Config{})
+	if err != nil {
+		return nil, err
+	}
+	company.AutoMigrate(&entity.Company{})
 
 	return &DataBaseEngine{
-		database: db,
+		stockDB:   stock,
+		companyDB: company,
 	}, nil
 }
 
-func (engine *DataBaseEngine) QueryCompanyByName(name string) ([]entity.Company, error) {
-	var companies = []entity.Company{}
-	result := engine.database.Where("name = ?", name).Find(&companies)
-	return companies, result.Error
-}
-
-func (engine *DataBaseEngine) QueryAllCompanies() ([]entity.Company, error) {
-	var companies []entity.Company
-	result := engine.database.Find(&companies)
-	return companies, result.Error
-}
-
-func (engine *DataBaseEngine) InsertCompanies(companyMap map[string]struct{}) {
-	if companyMap == nil {
-		return
-	}
-
-	for key := range companyMap {
-		companies, err := engine.QueryCompanyByName(key)
-		if err == nil && len(companies) == 0 {
-			result := engine.database.Where("name = ?", key).First(&companyMap)
-			if result.RowsAffected == 0 {
-				engine.database.Create(&entity.Company{Name: key})
-			}
-		}
-	}
-}
-
-func (engine *DataBaseEngine) QueryStockInfoByCompanyName(companyName string) ([]entity.StockInfo, error) {
-	var infos []entity.StockInfo
-	result := engine.database.Where("name = ?", companyName).Order("date").Find(&infos)
-	return infos, result.Error
-}
-
-func (engine *DataBaseEngine) DeleteStockInfoByCompanyName(companyMap map[string]struct{}) {
-	if companyMap == nil {
-		return
-	}
-
-	for key := range companyMap {
-		engine.database.Where("name = ?", key).Delete(&entity.StockInfo{})
-	}
-}
-
-func (engine *DataBaseEngine) InsertStockInfoList(infoList []entity.StockInfo) error {
-	if len(infoList) > 0 {
-		tx := engine.database.CreateInBatches(&infoList, 100)
-		return tx.Error
-	}
-
-	return nil
-}
-
-func (engine *DataBaseEngine) UpdateStockInfoByNameDate(info entity.StockInfo) error {
-	result := engine.database.
-		Model(&info).
-		Update("concentration", info.Concentration)
-
-	return result.Error
-}
-
 func (engine *DataBaseEngine) Close() {
-	db, _ := engine.database.DB()
-	db.Close()
+	stock, _ := engine.stockDB.DB()
+	stock.Close()
+
+	company, _ := engine.companyDB.DB()
+	company.Close()
 }
