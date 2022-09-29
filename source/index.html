@@ -53,10 +53,14 @@
 	</div>
 </body>
 
-<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-<script src="https://unpkg.com/element-ui/lib/index.js"></script>
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/echarts@5.3.3/dist/echarts.min.js"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
+<!-- <script src="https://unpkg.com/element-ui/lib/index.js"></script> -->
+<!-- <script src="https://unpkg.com/axios/dist/axios.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/echarts@5.3.3/dist/echarts.min.js"></script> -->
+<script src="./static/js/vue.js"></script>
+<script src="./static/js/element-ui-index.js"></script>
+<script src="./static/js/axios.min.js"></script>
+<script src="./static/js/echarts.min.js"></script>
 <script>
 new Vue({
 	el: '#app',
@@ -79,7 +83,9 @@ new Vue({
 			selectedQuotas: '',
 			mainChart: null,
 			dateList: [],
-			concentrationList: []
+			concentrationList: [],
+			// 参考值
+			referenceList: []
 		}
 	},
 	mounted() {
@@ -117,10 +123,18 @@ new Vue({
 					if (response.status == 200) {
 						that.dateList = [];
 						that.concentrationList = [];
+						that.referenceList = [];
 
 						response.data.stock_infos.forEach(item => {
 							that.dateList.push(item.date.substring(0, 10));
 							that.concentrationList.push(item.concentration);
+							if (that.selectedQuotas == "close") {
+								that.referenceList.push(item.close)
+							} else if (that.selectedQuotas == "quote_change") {
+								that.referenceList.push(item.quote_change)
+							} else if (that.selectedQuotas == "turnover_rate") {
+								that.referenceList.push(item.turnover_rate)
+							}
 						});
 
 						that.getMainChartData();
@@ -147,9 +161,21 @@ new Vue({
 					boundaryGap: false,
 					data: this.dateList
 				},
-				yAxis: {
-					type: 'value',
-				},
+				yAxis: [
+					{
+						type: 'value',
+						name: 'concentration',
+						min: 0,
+						max: 1
+					},
+					{
+						type: 'value',
+						name: 'reference',
+						nameLocation: 'start',
+						alignTicks: true,
+						inverse: true
+					}
+				],
 				dataZoom: [
 					{
 						type: 'inside',
@@ -163,10 +189,19 @@ new Vue({
 				],
 				series: [
 					{
-						name: '集中度',
+						name: 'concentration',
 						type: 'line',
+						color: ["#0000FF"],
 						showSymbol: false,
 						data: this.concentrationList
+					}, {
+						name: this.selectedQuotas,
+						type: 'line',
+						color: ["#FF0000"],
+						smooth: true,
+						yAxisIndex: 1,
+						showSymbol: false,
+						data: this.referenceList
 					}
 				]
 			};
