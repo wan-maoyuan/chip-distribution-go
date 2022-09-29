@@ -60,6 +60,7 @@ func (server *ChipServer) Run() {
 
 func (server *ChipServer) registerApi() {
 	server.g.StaticFile("/", "./source/index.html")
+	server.g.Static("/static", "./source")
 
 	server.g.GET("/company", server.service.GetAllCompanies)
 	server.g.GET("/stock_info", server.service.GetAllStockInfos)
